@@ -7,6 +7,11 @@ EXAMPLE-6 = example-6
 
 EXAMPLES = $(EXAMPLE-1) $(EXAMPLE-2) $(EXAMPLE-3) $(EXAMPLE-4) $(EXAMPLE-5) $(EXAMPLE-6)
 
+export CC := clang
+export CCFLAGS := -Wall
+export TARGET := aarch64-linux-gnu
+export FUSELD := lld
+
 all:
 	for i in $(EXAMPLES) ; do \
 	(cd $$i; make); \

@@ -17,6 +17,7 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/time.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
 
 static const char DEVICE[] = "/dev/video0";

@@ -17,6 +17,7 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/time.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
 
 // Change this to set the image format

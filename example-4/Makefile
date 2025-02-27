@@ -1,8 +1,5 @@
-CC=gcc
-CCFLAGS=-Wall
-
 example-4: example-4.c
-	$(CC) $(CCFLAGS) $^ -o $@
+	$(CC) --target=$(TARGET) -fuse-ld=$(FUSELD) $(CCFLAGS) $^ -o $@
 
 clean:
 	rm -f example-4
