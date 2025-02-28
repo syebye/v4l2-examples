@@ -20,13 +20,17 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
+#include <stdbool.h>
+
 static const char DEVICE[] = "/dev/video0";
 
-int fd;
+static int fd;
+
 struct {
     void *start;
     size_t length;
 } *buffers;
+
 unsigned int num_buffers;
 struct v4l2_requestbuffers reqbuf = {0};
 
@@ -274,6 +278,72 @@ static void main_loop(void) {
 
 }
 
+typedef struct {
+    __u32 cap;
+    const char* name;
+} cap_name_t;
+
+cap_name_t cap_names[] = {
+    {V4L2_CAP_VIDEO_CAPTURE, "V4L2_CAP_VIDEO_CAPTURE"},
+    {V4L2_CAP_VIDEO_OUTPUT, "V4L2_CAP_VIDEO_OUTPUT"},
+    {V4L2_CAP_VIDEO_OVERLAY, "V4L2_CAP_VIDEO_OVERLAY"},
+    {V4L2_CAP_VBI_CAPTURE, "V4L2_CAP_VBI_CAPTURE"},
+    {V4L2_CAP_VBI_OUTPUT, "V4L2_CAP_VBI_OUTPUT"},
+    {V4L2_CAP_SLICED_VBI_CAPTURE, "V4L2_CAP_SLICED_VBI_CAPTURE"},
+    {V4L2_CAP_SLICED_VBI_OUTPUT, "V4L2_CAP_SLICED_VBI_OUTPUT"},
+    {V4L2_CAP_RDS_CAPTURE, "V4L2_CAP_RDS_CAPTURE"},
+    {V4L2_CAP_VIDEO_OUTPUT_OVERLAY, "V4L2_CAP_VIDEO_OUTPUT_OVERLAY"},
+    {V4L2_CAP_HW_FREQ_SEEK, "V4L2_CAP_HW_FREQ_SEEK"},
+    {V4L2_CAP_RDS_OUTPUT, "V4L2_CAP_RDS_OUTPUT"},
+    {V4L2_CAP_VIDEO_CAPTURE_MPLANE, "V4L2_CAP_VIDEO_CAPTURE_MPLANE"},
+    {V4L2_CAP_VIDEO_OUTPUT_MPLANE, "V4L2_CAP_VIDEO_OUTPUT_MPLANE"},
+    {V4L2_CAP_VIDEO_M2M_MPLANE, "V4L2_CAP_VIDEO_M2M_MPLANE"},
+    {V4L2_CAP_VIDEO_M2M, "V4L2_CAP_VIDEO_M2M"},
+    {V4L2_CAP_TUNER, "V4L2_CAP_TUNER"},
+    {V4L2_CAP_AUDIO, "V4L2_CAP_AUDIO"},
+    {V4L2_CAP_RADIO, "V4L2_CAP_RADIO"},
+    {V4L2_CAP_MODULATOR, "V4L2_CAP_MODULATOR"},
+    {V4L2_CAP_SDR_CAPTURE, "V4L2_CAP_SDR_CAPTURE"},
+    {V4L2_CAP_EXT_PIX_FORMAT, "V4L2_CAP_EXT_PIX_FORMAT"},
+    {V4L2_CAP_SDR_OUTPUT, "V4L2_CAP_SDR_OUTPUT"},
+    {V4L2_CAP_META_CAPTURE, "V4L2_CAP_META_CAPTURE"},
+    {V4L2_CAP_READWRITE, "V4L2_CAP_READWRITE"},
+    {V4L2_CAP_ASYNCIO, "V4L2_CAP_ASYNCIO"},
+    {V4L2_CAP_STREAMING, "V4L2_CAP_STREAMING"},
+    {V4L2_CAP_META_OUTPUT, "V4L2_CAP_META_OUTPUT"},
+    {V4L2_CAP_TOUCH, "V4L2_CAP_TOUCH"},
+    {V4L2_CAP_IO_MC, "V4L2_CAP_IO_MC"},
+    {V4L2_CAP_DEVICE_CAPS, "V4L2_CAP_DEVICE_CAPS"},
+};
+
+static void query_capabilities(void)
+{
+    struct v4l2_capability cap;
+
+    if (xioctl(fd, VIDIOC_QUERYCAP, &cap)) {
+        perror("VIDIOC_QUERYCAP\n");
+        exit(EXIT_FAILURE);
+    }
+
+    int cap_max_cnt = sizeof(cap_names) / sizeof(cap_name_t);
+    printf("cap_max_cnt %d\n", cap_max_cnt);
+
+    for (int i = 0; i < cap_max_cnt; i++) {
+        bool cap_found = (cap.capabilities & cap_names[i].cap) == cap_names[i].cap;
+
+        if (cap_found) {
+            printf("O\t%s\n", cap_names[i].name);
+        }
+        else {
+            printf("X\t%s\n", cap_names[i].name);
+        }
+    }
+
+    if (!(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE)) {
+        perror("No video capture capability\n");
+    }
+}
+
 int main(void) {
     // Open the device file
     fd = open(DEVICE, O_RDWR);
@@ -281,6 +351,8 @@ int main(void) {
         perror(DEVICE);
         return errno;
     }
+
+    query_capabilities();
 
     init_device();
 
