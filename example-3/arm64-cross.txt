@@ -1,0 +1,9 @@
+[binaries]
+c = 'aarch64-linux-gnu-gcc'  # Adjust based on your cross-compiler
+ld = 'aarch64-linux-gnu-ld'   # Adjust based on your linker
+
+[host_machine]
+system = 'linux'
+cpu_family = 'aarch64'
+cpu = 'aarch64'
+endian = 'little'

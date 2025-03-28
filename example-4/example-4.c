@@ -33,7 +33,7 @@ int request_buffers(int fd) {
   unsigned int i;
 
   memset(&reqbuf, 0, sizeof(reqbuf));
-  reqbuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  reqbuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
   reqbuf.memory = V4L2_MEMORY_MMAP;
   reqbuf.count = 20;
 

@@ -44,9 +44,10 @@ int print_and_set_format(int fd) {
   struct v4l2_format fmt = {0};
   fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
-  fmt.fmt.pix.width = 320;
-  fmt.fmt.pix.height = 240;
-  fmt.fmt.pix.pixelformat = fmtdesc.pixelformat; // The last discovered pixel format
+  fmt.fmt.pix.width = 1280;
+  fmt.fmt.pix.height = 720;
+  fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB24; //fmtdesc.pixelformat; // The last discovered pixel format
+  //fmt.fmt.pix.pixelformat = fmtdesc.pixelformat; // The last discovered pixel format
   fmt.fmt.pix.field = V4L2_FIELD_NONE;
 
   if (-1 == ioctl(fd, VIDIOC_S_FMT, &fmt)) {
